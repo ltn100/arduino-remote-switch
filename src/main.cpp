@@ -13,8 +13,8 @@ const uint64_t pipes[2] = {
 #define EXT_LED 2
 #define SwitchPin 3
 
-//#define INPUT_MODULE
-#define OUTPUT_MODULE
+#define INPUT_MODULE
+//#define OUTPUT_MODULE
 
 #define LOOP_DELAY 5
 
@@ -23,23 +23,22 @@ unsigned int communicate(unsigned int input, unsigned int timeout=0) {
   unsigned int output = 0x0;
 
   radio.stopListening();
-  radio.write(&input, sizeof(input));
   delay(delay_time);
+  radio.write(&input, sizeof(input));
+  
 
   radio.startListening();
+  delay(delay_time);
   unsigned int count = 0;
 
   while(!radio.available()) {
     if (count*delay_time > timeout) {
-      break;
+      return 0x0;
     }
     delay(delay_time);
+    count++;
   }
-  if (radio.available()) {
-    radio.read(&output, sizeof(output));
-    radio.flush_rx();
-  }
-
+  radio.read(&output, sizeof(output));
   return output;
 }
 
@@ -91,7 +90,13 @@ void setup(void){
 void loop(void){
 
   unsigned int msg = digitalRead(EXT_LED) & 0x1;
+  //Serial.print("Wrote: ");
+  //Serial.print(msg);
+  //Serial.print("\n");
   msg = communicate(msg, 500);
+  //Serial.print("Read: ");
+  //Serial.print(msg);
+  //Serial.print("\n"); 
   digitalWrite(EXT_LED, msg & 0x1);
 }
 #endif
