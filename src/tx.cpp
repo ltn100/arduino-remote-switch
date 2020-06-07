@@ -6,7 +6,7 @@
 #include "common.h"
 
 
-#define OUTPUT_LED_PIN 2
+#define OUTPUT_LED_PIN 4
 #define INPUT_SWITCH_PIN 3
 #define INPUT_CURRNET_SENSOR_PIN A0
 
@@ -17,7 +17,7 @@
 
 // Globals
 RF24 g_radio(9, 10);
-ACS712 g_current_sensor(ACS712_20A, INPUT_CURRNET_SENSOR_PIN);
+ACS712 g_current_sensor(ACS712_30A, INPUT_CURRNET_SENSOR_PIN);
 
 void setup(void)
 {
@@ -59,6 +59,10 @@ void loop(void)
     #ifdef DEBUG
     Serial.print("Current: ");
     Serial.print(current);
+    Serial.print("\n");
+
+    Serial.print("Switch: ");
+    Serial.print(switch_on);
     Serial.print("\n");
 
     Serial.print("Wrote: ");

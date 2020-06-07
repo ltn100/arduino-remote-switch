@@ -17,7 +17,8 @@
 // Globals
 RF24 g_radio(CE_PIN, CS_PIN);
 msg_t g_msg {0};
-int g_persist_time {0};
+long int g_persist_time {0};
+long int g_time_since_interrupt {100000};
 
 void interruptFunction();
 
@@ -61,6 +62,13 @@ void loop(void)
         }
     }
 
+    if (g_time_since_interrupt > PERSIST_TIME) {
+        // g_msg too old
+        on = false;
+    } else {
+        g_time_since_interrupt += LOOP_DELAY;
+    }
+
     digitalWrite(OUTPUT_LED_PIN, on);
     digitalWrite(OUTPUT_SWITCH_PIN, !on);
 
@@ -71,6 +79,8 @@ void interruptFunction()
 {
     while (g_radio.available())
     {
+        g_time_since_interrupt = 0;
+
         g_radio.read(&g_msg, sizeof(g_msg));
 
         #ifdef DEBUG
